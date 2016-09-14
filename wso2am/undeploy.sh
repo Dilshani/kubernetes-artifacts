@@ -22,15 +22,7 @@ common_folder=$(cd "${script_path}/../common/scripts/"; pwd)
 
 product_profiles=(default api-key-manager api-store api-publisher gateway-manager gateway-worker)
 
-full_deployment=false
-
-while getopts :f FLAG; do
-    case $FLAG in
-        f)
-            full_deployment=true
-            ;;
-    esac
-done
+full_deployment=true
 
 if [[ ! -z $product_profiles ]]; then
     for profile in ${product_profiles[@]}; do

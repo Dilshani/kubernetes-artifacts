@@ -32,42 +32,29 @@ source "${common_scripts_folder}/base.sh"
 # Deploy using separate profiles
 function distributed {
     # deploy services
-    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "wso2am" "api-key-manager" && \
-    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "wso2am" "api-store" && \
-    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "wso2am" "api-publisher" && \
-    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "wso2am" "gateway-manager" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "api-key-manager" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "api-store" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "api-publisher" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "gateway-manager" && \
     #    bash "${common_scripts_folder}/deploy-kubernetes-service.sh" "gateway-worker" && \
 
     # deploy the controllers
-    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "wso2am" "api-key-manager" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "api-key-manager" && \
     bash "${common_scripts_folder}/wait-until-server-starts.sh" "api-key-manager" "${km_port}" && \
 
-    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "wso2am" "api-store" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "api-store" && \
     bash "${common_scripts_folder}/wait-until-server-starts.sh" "api-store" "${store_port}" && \
 
-    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "wso2am" "api-publisher" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "api-publisher" && \
     bash "${common_scripts_folder}/wait-until-server-starts.sh" "api-publisher" "${publisher_port}" && \
 
-    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "wso2am" "gateway-manager" && \
+    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "gateway-manager" && \
     bash "${common_scripts_folder}/wait-until-server-starts.sh" "gateway-manager" "${gateway_manager_port}"
 
     #    bash "${common_scripts_folder}/deploy-kubernetes-rc.sh" "gateway-worker" && \
     #    bash "${common_scripts_folder}/wait-until-server-starts.sh" "gateway-worker" "${gateway_worker_port}"
 }
 
-while getopts :dh FLAG; do
-    case $FLAG in
-        d)
-            deployment_pattern="distributed"
-            ;;
-        h)
-            showUsageAndExitDistributed
-            ;;
-        \?)
-            showUsageAndExitDistributed
-            ;;
-    esac
-done
 
 validateKubeCtlConfig
 
@@ -75,17 +62,13 @@ bash $script_path/../common/wso2-shared-dbs/deploy.sh
 
 # deploy DB service and rc
 echo "Deploying APIM database Service..."
-kubectl create -f "$script_path/mysql-apimdb-service.yaml"
+kubectl create -f "mysql-apimdb-service.yaml"
 
 echo "Deploying APIM database Replication Controller..."
-kubectl create -f "$script_path/mysql-apimdb-controller.yaml"
+kubectl create -f "mysql-apimdb-controller.yaml"
 
 # wait till mysql is started
 # TODO: find a better way to do this
 sleep 10
 
-if [ "$deployment_pattern" = "distributed" ]; then
-    distributed
-else
-    default "${default_port}"
-fi
+distributed

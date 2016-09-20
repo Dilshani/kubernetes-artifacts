@@ -19,8 +19,10 @@
 
 set -e
 
-product_name=${PWD##*/}
+product_name=$2
 product_profile=$1
+
+echo "undeploy ====> ${product_name}-${product_profile}"
 
 if [[ ! -z $product_profile ]]; then
     kubectl delete rc,services,pods -l name="${product_name}-${product_profile}"

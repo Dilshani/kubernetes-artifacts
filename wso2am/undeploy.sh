@@ -26,7 +26,7 @@ full_deployment=true
 
 if [[ ! -z $product_profiles ]]; then
     for profile in ${product_profiles[@]}; do
-        bash "${common_folder}/undeploy.sh" "$profile"
+        bash "${common_folder}/undeploy.sh" "$profile" "wso2am"
     done
 else
     bash "${common_folder}/undeploy.sh"
